@@ -50,28 +50,32 @@ function startTracking(tabId) {
     return;
   }
 
-  if (activeTabId === tabId) return;
+  const tabChanged = activeTabId !== tabId;
+  const isNewSession = startTime === null;
 
-  activeTabId = tabId;
-  startTime = Date.now();
-  
-  TimeCatLogger.log('BACKGROUND', `Monitoring tab: ${tabId} started`);
-  
-  chrome.storage.local.set({ activeTabId, startTime });
+  if (tabChanged || isNewSession) {
+    activeTabId = tabId;
+    
+    if (isNewSession) {
+      startTime = Date.now();
+      TimeCatLogger.log('BACKGROUND', `New session started on tab: ${tabId}`);
+    }
+    
+    chrome.storage.local.set({ activeTabId, startTime });
+  }
 }
 
 /**
  * Interrompe o monitoramento atual.
  */
 function stopTracking() {
-  if (activeTabId === null || isBlocked) return;
+  if (isBlocked) return;
   
   TimeCatLogger.log('BACKGROUND', `Stopped monitoring tab: ${activeTabId}`);
   
   activeTabId = null;
-  startTime = null;
-  
-  chrome.storage.local.remove(['activeTabId', 'startTime']);
+  // Não limpamos o startTime aqui para que a sessão continue ao focar novamente
+  chrome.storage.local.set({ activeTabId });
 }
 
 /**
