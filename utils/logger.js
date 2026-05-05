@@ -86,10 +86,4 @@ const Logger = {
 /**
  * Universal Global Attachment
  */
-(function(root) {
-    if (typeof module !== 'undefined' && module.exports) {
-        module.exports = Logger;
-    } else {
-        root.TimeCatLogger = Logger;
-    }
-})(typeof globalThis !== 'undefined' ? globalThis : (typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : this));
+globalThis.TimeCatLogger = Logger;
