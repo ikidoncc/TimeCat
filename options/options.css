@@ -4,7 +4,6 @@ body {
     background-color: #f4f7f6;
     color: #333;
     margin: 0;
-    padding: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -23,6 +22,12 @@ body {
 header {
     text-align: center;
     margin-bottom: 30px;
+}
+
+.logo {
+    margin: 0;
+    width: 2rem;
+    height: 2rem;
 }
 
 .title {
@@ -98,7 +103,6 @@ input[type="number"] {
 }
 
 footer {
-    margin-top: 30px;
     padding-top: 20px;
     border-top: 1px solid #eee;
     text-align: center;

@@ -16,7 +16,8 @@ TimeCat is a Chrome Extension designed to improve digital well-being by enforcin
 The system is divided into three main components:
 - **Background (Service Worker)**: Acts as the "source of truth". It maintains the timer, tracks the active tab, manages the block state, and broadcasts updates to all tabs.
 - **Content Scripts**: Injected into every web page. Responsible for rendering the blocking overlay, intercepting user input, and implementing anti-bypass measures.
-- **Options Page**: A dedicated UI for users to configure usage limits and break durations.
+- **Options Page**: A dedicated full-page UI for detailed configuration.
+- **Popup**: A quick-access menu to check current status and time since the last break.
 - **Communication**: Uses a "Broadcast & Handshake" model via `chrome.runtime.sendMessage` and `chrome.tabs.sendMessage`.
 
 ## 4. Core Features (Implemented)

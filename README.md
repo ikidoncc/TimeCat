@@ -18,10 +18,14 @@ time-cat/
 ├── background.js          # Service worker (Timer logic & State)
 ├── content.js             # Script injected into pages (Overlay & Anti-bypass)
 ├── content.css            # Styles for the blocking overlay
-├── options/
-│   ├── options.html       # Settings UI
-│   ├── options.css        # Settings styling
-│   └── options.js         # Settings logic (chrome.storage)
+├── icons/                 # Extension icons (SVG & PNG)
+├── options/               # Detailed Settings page
+│   ├── options.html
+│   ├── options.css
+│   └── options.js
+├── popup/                 # Quick status popup
+│   ├── popup.html
+│   └── popup.js
 └── README.md              # Documentation
 ```
 
