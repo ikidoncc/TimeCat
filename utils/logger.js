@@ -68,11 +68,12 @@ const Logger = {
      * Sets up global error listeners for the current context
      */
     initGlobalHandlers(context) {
-        window.onerror = (message, source, lineno, colno, error) => {
+        // Use self which works in both Window and Worker contexts
+        self.onerror = (message, source, lineno, colno, error) => {
             this.log('ERROR', `Global Error: ${message}`, { source, lineno, colno, stack: error?.stack });
         };
 
-        window.onunhandledrejection = (event) => {
+        self.onunhandledrejection = (event) => {
             this.log('ERROR', `Unhandled Promise Rejection: ${event.reason}`, { stack: event.reason?.stack });
         };
         
@@ -80,10 +81,10 @@ const Logger = {
     }
 };
 
-// Export for Background/Popup (ES Modules) or attach to window for Content Scripts if needed
+// Export for Background/Popup (ES Modules) or attach to global scope
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = Logger;
 } else {
-    // In many extension contexts, we can just use export/import or global assignment
-    window.TimeCatLogger = Logger;
+    // self is the safest way to target the global scope in any extension context
+    self.TimeCatLogger = Logger;
 }
