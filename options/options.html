@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TimeCat Settings</title>
+    <link rel="stylesheet" href="options.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="title">TimeCat 🐾</h1>
+            <p class="subtitle">Settings</p>
+        </header>
+
+        <main>
+            <div class="setting-group">
+                <label for="usageLimit">Maximum continuous use (minutes):</label>
+                <input type="number" id="usageLimit" min="1" max="1440" step="1">
+                <p class="description">After this time, the browser will be blocked.</p>
+            </div>
+
+            <div class="setting-group">
+                <label for="breakDuration">Mandatory break time (minutes):</label>
+                <input type="number" id="breakDuration" min="1" max="1440" step="1">
+                <p class="description">The duration you must wait before the block is removed.</p>
+            </div>
+
+            <div class="actions">
+                <button id="save" class="btn-primary">Save Settings</button>
+                <span id="status" class="status-message"></span>
+            </div>
+        </main>
+
+        <footer>
+            <p>Remember: breaks are essential for your productivity and health.</p>
+        </footer>
+    </div>
+    <script src="options.js"></script>
+</body>
+</html>
