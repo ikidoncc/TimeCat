@@ -13,6 +13,16 @@ let startTime = null;
 let isBlocked = false;
 let breakEndTime = null;
 
+// Inicializa o estado a partir do storage
+chrome.storage.local.get(['activeTabId', 'startTime', 'isBlocked', 'breakEndTime'], (data) => {
+  activeTabId = data.activeTabId || null;
+  startTime = data.startTime || null;
+  isBlocked = data.isBlocked || false;
+  breakEndTime = data.breakEndTime || null;
+  
+  TimeCatLogger.log('BACKGROUND', 'State initialized from storage', { isBlocked, startTime });
+});
+
 // Configurações padrão (em segundos)
 const DEFAULTS = {
   usageLimit: 20 * 60, // 20 minutos
@@ -87,6 +97,8 @@ async function activateBlock() {
   const { breakDuration } = await getSettings();
   breakEndTime = Date.now() + (breakDuration * 1000);
 
+  await chrome.storage.local.set({ isBlocked, breakEndTime });
+
   TimeCatLogger.log('BACKGROUND', 'BLOCK ACTIVATED', { duration: breakDuration });
 
   await broadcastMessage({ action: "block_page" });
@@ -100,6 +112,12 @@ async function deactivateBlock() {
   breakEndTime = null;
   startTime = Date.now();
 
+  await chrome.storage.local.set({ 
+    isBlocked, 
+    breakEndTime, 
+    startTime 
+  });
+
   TimeCatLogger.log('BACKGROUND', 'BLOCK DEACTIVATED');
 
   await broadcastMessage({ action: "unblock_page" });
@@ -111,9 +129,10 @@ async function deactivateBlock() {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "request_status") {
     const now = Date.now();
-    const secondsLeft = isBlocked ? Math.ceil((breakEndTime - now) / 1000) : 0;
+    const secondsLeft = isBlocked ? Math.max(0, Math.ceil((breakEndTime - now) / 1000)) : 0;
     sendResponse({ isBlocked, secondsLeft });
   }
+  return true; // Mantém o canal aberto para respostas assíncronas
 });
 
 /**
@@ -152,5 +171,20 @@ setInterval(async () => {
 // Inicialização
 chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
   if (tabs[0]) startTracking(tabs[0].id);
+});
+
+// Listeners para mudanças de aba e janela
+chrome.tabs.onActivated.addListener((activeInfo) => {
+  startTracking(activeInfo.tabId);
+});
+
+chrome.windows.onFocusChanged.addListener((windowId) => {
+  if (windowId === chrome.windows.WINDOW_ID_NONE) {
+    stopTracking();
+  } else {
+    chrome.tabs.query({ active: true, windowId: windowId }, (tabs) => {
+      if (tabs[0]) startTracking(tabs[0].id);
+    });
+  }
 });
 
