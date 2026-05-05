@@ -60,6 +60,15 @@ function blockEvents(event) {
 }
 
 /**
+ * Formata segundos em MM:SS
+ */
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+/**
  * Escuta mensagens do Background Service Worker
  */
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -67,5 +76,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         createOverlay();
     } else if (request.action === "unblock_page") {
         removeOverlay();
+    } else if (request.action === "update_countdown") {
+        const timerElement = document.getElementById('time-cat-timer');
+        if (timerElement) {
+            timerElement.innerText = formatTime(request.secondsLeft);
+        } else if (!overlayElement) {
+            // Caso o overlay não exista mas recebemos atualização, garantimos o bloqueio
+            createOverlay();
+        }
     }
 });
+
