@@ -1,9 +1,11 @@
 /**
  * TimeCat - Background Service Worker
- * 
- * Este script é o coração da extensão. Ele monitora a atividade das abas
- * e rastreia quanto tempo o usuário passa ativamente em cada uma.
  */
+
+importScripts('utils/logger.js');
+
+// Initialize Logger for Background
+TimeCatLogger.initGlobalHandlers('BACKGROUND');
 
 // Estado interno do monitoramento
 let activeTabId = null;
@@ -43,7 +45,7 @@ function startTracking(tabId) {
   activeTabId = tabId;
   startTime = Date.now();
   
-  console.log(`[TimeCat] Monitoring tab: ${tabId} started at ${new Date(startTime).toLocaleTimeString()}`);
+  TimeCatLogger.log('BACKGROUND', `Monitoring tab: ${tabId} started`);
   
   chrome.storage.local.set({ activeTabId, startTime });
 }
@@ -53,6 +55,8 @@ function startTracking(tabId) {
  */
 function stopTracking() {
   if (activeTabId === null || isBlocked) return;
+  
+  TimeCatLogger.log('BACKGROUND', `Stopped monitoring tab: ${activeTabId}`);
   
   activeTabId = null;
   startTime = null;
@@ -83,8 +87,9 @@ async function activateBlock() {
   const { breakDuration } = await getSettings();
   breakEndTime = Date.now() + (breakDuration * 1000);
 
+  TimeCatLogger.log('BACKGROUND', 'BLOCK ACTIVATED', { duration: breakDuration });
+
   await broadcastMessage({ action: "block_page" });
-  console.log(`[TimeCat] BLOCK ACTIVATED. Ends at: ${new Date(breakEndTime).toLocaleTimeString()}`);
 }
 
 /**
@@ -95,8 +100,9 @@ async function deactivateBlock() {
   breakEndTime = null;
   startTime = Date.now();
 
+  TimeCatLogger.log('BACKGROUND', 'BLOCK DEACTIVATED');
+
   await broadcastMessage({ action: "unblock_page" });
-  console.log(`[TimeCat] BLOCK DEACTIVATED. Resetting usage timer.`);
 }
 
 /**

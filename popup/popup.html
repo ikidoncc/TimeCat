@@ -28,7 +28,42 @@
             cursor: pointer;
             width: 100%;
         }
+        .debug-section {
+            margin-top: 15px;
+            text-align: left;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+        .log-container {
+            height: 120px;
+            overflow-y: auto;
+            background: #2c3e50;
+            color: #ecf0f1;
+            font-family: monospace;
+            font-size: 10px;
+            padding: 5px;
+            border-radius: 4px;
+            margin: 5px 0;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .btn-clear {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 10px;
+            cursor: pointer;
+            float: right;
+            margin-bottom: 10px;
+        }
+        .log-entry { margin-bottom: 4px; border-bottom: 1px solid #34495e; padding-bottom: 2px; }
+        .log-time { color: #95a5a6; }
+        .log-context { font-weight: bold; color: #3498db; }
+        .log-context.error { color: #e74c3c; }
     </style>
+    <script src="../utils/logger.js"></script>
 </head>
 <body>
     <img src="../icons/icon.svg" class="logo" alt="TimeCat">
@@ -36,6 +71,13 @@
         <div class="label">Time since last break:</div>
         <div id="usage-time" class="time">00:00</div>
     </div>
+    
+    <div class="debug-section">
+        <div class="label">Debug Logs:</div>
+        <div id="log-container" class="log-container"></div>
+        <button id="clear-logs" class="btn-clear">Clear Logs</button>
+    </div>
+
     <button id="open-options" class="btn-options">Settings</button>
     <script src="popup.js"></script>
 </body>

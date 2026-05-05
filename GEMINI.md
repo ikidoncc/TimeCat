@@ -27,8 +27,24 @@ The system is divided into three main components:
 - **Countdown System**: Real-time synchronized countdown across all tabs.
 - **Anti-Bypass Protection**: `MutationObserver` and heartbeat checks to prevent manual DOM deletion of the block.
 - **Settings Management**: Persistent configuration for usage and break intervals.
+- **Logging System**: Unified, persistent logging across all contexts with a debug panel in the popup.
 
 ## 5. Development Rules
+...
+## 11. Debugging System
+TimeCat includes a robust logging system to track events across Background, Content, and Popup contexts.
+- **Storage**: Logs are stored in `chrome.storage.local` under the key `logs`.
+- **Retention**: Only the last 200 entries are kept to prevent storage overflow.
+- **Contexts**:
+  - `BACKGROUND`: Events from the service worker (timer, blocks).
+  - `CONTENT`: Events from web pages (overlay injection, anti-bypass).
+  - `POPUP`: UI interactions.
+  - `ERROR`: Unhandled exceptions and promise rejections.
+- **How to read logs**: 
+  1. Open the extension Popup.
+  2. View the "Debug Logs" section at the bottom.
+  3. For technical details, check the `chrome.storage.local` directly via DevTools.
+- **Clearing Logs**: Use the "Clear Logs" button in the Popup debug section.
 - **Modern APIs**: Always use stable Manifest V3 APIs.
 - **Language**: All code, comments, and documentation must be in **English**.
 - **Modularity**: Keep logic separated (Background for state, Content for UI).

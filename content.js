@@ -4,6 +4,10 @@
  * Este script é injetado nas páginas web para criar e gerenciar o overlay de bloqueio.
  */
 
+// Initialize Logger for Content Context
+// Note: TimeCatLogger is available because utils/logger.js is loaded first via manifest
+TimeCatLogger.initGlobalHandlers('CONTENT');
+
 let overlayElement = null;
 let observer = null;
 let isBlockActive = false;
