@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "TimeCat - Bloqueador de Uso Contínuo",
+  "name": "TimeCat - Continuous Use Blocker",
   "version": "1.0.0",
-  "description": "Monitora o tempo de uso contínuo e bloqueia o acesso após o limite definido.",
+  "description": "It monitors continuous usage time and blocks access after a defined limit is reached.",
   "permissions": [
     "tabs",
     "storage",
