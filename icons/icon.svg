@@ -1,0 +1,13 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Modern Rounded Background -->
+  <rect width="128" height="128" rx="28" fill="#3498db"/>
+  
+  <!-- Minimalist Paw Print -->
+  <!-- Top Pads -->
+  <circle cx="38" cy="48" r="10" fill="white"/>
+  <circle cx="64" cy="38" r="10" fill="white"/>
+  <circle cx="90" cy="48" r="10" fill="white"/>
+  
+  <!-- Main Pad -->
+  <path d="M64 102C78 102 90 91 90 76C90 66 82 58 64 58C46 58 38 66 38 76C38 91 50 102 64 102Z" fill="white"/>
+</svg>
