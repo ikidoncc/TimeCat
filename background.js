@@ -61,6 +61,21 @@ function stopTracking() {
 }
 
 /**
+ * Notifica todas as abas sobre uma mudança de estado ou atualização.
+ */
+async function broadcastMessage(message) {
+  const tabs = await chrome.tabs.query({});
+  for (const tab of tabs) {
+    // Verificamos se a URL é válida para evitar erro em páginas do sistema (chrome://)
+    if (tab.url && (tab.url.startsWith('http') || tab.url.startsWith('https'))) {
+      chrome.tabs.sendMessage(tab.id, message).catch(err => {
+        // Silenciosamente ignora abas onde o content script ainda não carregou
+      });
+    }
+  }
+}
+
+/**
  * Ativa o estado de bloqueio.
  */
 async function activateBlock() {
@@ -68,12 +83,7 @@ async function activateBlock() {
   const { breakDuration } = await getSettings();
   breakEndTime = Date.now() + (breakDuration * 1000);
 
-  // Notifica todas as abas (ou apenas a ativa) para mostrar o overlay
-  const tabs = await chrome.tabs.query({});
-  tabs.forEach(tab => {
-    chrome.tabs.sendMessage(tab.id, { action: "block_page" }).catch(() => {});
-  });
-
+  await broadcastMessage({ action: "block_page" });
   console.log(`[TimeCat] BLOCK ACTIVATED. Ends at: ${new Date(breakEndTime).toLocaleTimeString()}`);
 }
 
@@ -83,31 +93,20 @@ async function activateBlock() {
 async function deactivateBlock() {
   isBlocked = false;
   breakEndTime = null;
-  
-  // Reinicia o tempo para a aba atual
   startTime = Date.now();
 
-  const tabs = await chrome.tabs.query({});
-  tabs.forEach(tab => {
-    chrome.tabs.sendMessage(tab.id, { action: "unblock_page" }).catch(() => {});
-  });
-
+  await broadcastMessage({ action: "unblock_page" });
   console.log(`[TimeCat] BLOCK DEACTIVATED. Resetting usage timer.`);
 }
 
-// 1. Detectar quando o usuário troca de aba
-chrome.tabs.onActivated.addListener((activeInfo) => {
-  startTracking(activeInfo.tabId);
-});
-
-// 2. Detectar quando o foco da janela muda
-chrome.windows.onFocusChanged.addListener((windowId) => {
-  if (windowId === chrome.windows.WINDOW_ID_NONE) {
-    stopTracking();
-  } else {
-    chrome.tabs.query({ active: true, windowId: windowId }, (tabs) => {
-      if (tabs[0]) startTracking(tabs[0].id);
-    });
+/**
+ * Escuta pedidos de sincronização de novas abas
+ */
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "request_status") {
+    const now = Date.now();
+    const secondsLeft = isBlocked ? Math.ceil((breakEndTime - now) / 1000) : 0;
+    sendResponse({ isBlocked, secondsLeft });
   }
 });
 
@@ -123,18 +122,15 @@ setInterval(async () => {
     if (remainingMs <= 0) {
       await deactivateBlock();
     } else {
-      // Enviar atualização do countdown para as abas
       const secondsLeft = Math.ceil(remainingMs / 1000);
-      const tabs = await chrome.tabs.query({});
-      tabs.forEach(tab => {
-        chrome.tabs.sendMessage(tab.id, { 
-          action: "update_countdown", 
-          secondsLeft 
-        }).catch(() => {});
+      await broadcastMessage({ 
+        action: "update_countdown", 
+        secondsLeft 
       });
     }
     return;
   }
+
 
   // Lógica de monitoramento de uso
   if (activeTabId && startTime) {

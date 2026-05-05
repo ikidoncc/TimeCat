@@ -69,9 +69,30 @@ function formatTime(seconds) {
 }
 
 /**
+ * Inicialização: Sincroniza o estado atual com o background script.
+ */
+function initialize() {
+    chrome.runtime.sendMessage({ action: "request_status" }, (response) => {
+        if (chrome.runtime.lastError) return;
+        
+        if (response && response.isBlocked) {
+            createOverlay();
+            const timerElement = document.getElementById('time-cat-timer');
+            if (timerElement) {
+                timerElement.innerText = formatTime(response.secondsLeft);
+            }
+        }
+    });
+}
+
+// Executa a inicialização assim que o script for injetado
+initialize();
+
+/**
  * Escuta mensagens do Background Service Worker
  */
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+
     if (request.action === "block_page") {
         createOverlay();
     } else if (request.action === "unblock_page") {
