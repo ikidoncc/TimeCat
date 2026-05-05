@@ -30,6 +30,20 @@ document.getElementById('save').addEventListener('click', () => {
     });
 });
 
+// Reseta para os valores padrão
+document.getElementById('reset').addEventListener('click', () => {
+    const DEFAULTS = {
+        usageLimit: 20 * 60,
+        breakDuration: 5 * 60
+    };
+
+    chrome.storage.local.set(DEFAULTS, () => {
+        document.getElementById('usageLimit').value = DEFAULTS.usageLimit / 60;
+        document.getElementById('breakDuration').value = DEFAULTS.breakDuration / 60;
+        showStatus('Settings reset to defaults! 🐾', '#3498db');
+    });
+});
+
 /**
  * Exibe uma mensagem de status temporária
  */
